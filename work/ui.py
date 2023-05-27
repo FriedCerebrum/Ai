@@ -11,8 +11,8 @@ from work import predict
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setMinimumSize(400, 450)
-        self.setWindowTitle("Мое окно с логотипом")
+        self.setFixedSize(400, 450)
+        self.setWindowTitle("Программа, ага")
         # Создаем кнопку выбора файла
         self.btn_select_image = QPushButton('Выбрать изображение')
         self.btn_select_image.clicked.connect(self.select_image)
