@@ -11,7 +11,8 @@ from work import predict
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setMinimumSize(200, 200)
+        self.setMinimumSize(400, 450)
+        self.setWindowTitle("Мое окно с логотипом")
         # Создаем кнопку выбора файла
         self.btn_select_image = QPushButton('Выбрать изображение')
         self.btn_select_image.clicked.connect(self.select_image)
@@ -43,7 +44,7 @@ class MainWindow(QMainWindow):
         # Текущее изображение
         self.current_image = None
 
-        self.class_values= [
+        self.class_values = [
             "1.11.1: Опасный поворот направо",
             "1.11.2: Опасный поворот налево",
             "1.12.2: Опасные повороты с первым поворотом налево",
@@ -80,8 +81,15 @@ class MainWindow(QMainWindow):
             "4.2.2: Объезд препятствия слева",
             "4.2.3: Объезд препятствия слева или справа",
             "4.3: Круговое движение",
-            "5.19: Пешеходный переход" ]
+            "5.19: Пешеходный переход"]
 
+        self.add_logo()
+    def add_logo(self):
+        logo_label = QLabel(self)
+        logo_pixmap = QPixmap("logo.jpg")  # Укажите путь к вашему логотипу
+        logo_label.setPixmap(logo_pixmap)
+        logo_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.statusBar().addPermanentWidget(logo_label)
     def select_image(self):
         # Открываем диалог выбора файла
         file_name, _ = QFileDialog.getOpenFileName(self, 'Выбрать изображение', '', 'Image files (*.jpg *.png)')
@@ -138,7 +146,8 @@ class MainWindow(QMainWindow):
 
         Спасибо за использование программы!
         """
-        QMessageBox.information(self, 'Помощь', text)
+        QMessageBox.information(self, 'Помощь. Ты серьёзно сюда ткнул?', text)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
