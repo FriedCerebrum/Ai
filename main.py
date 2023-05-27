@@ -47,10 +47,14 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 
 # Определите преобразования, которые нужно выполнить на изображениях
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),  # Изменить размер изображения
-    transforms.ToTensor(),  # Преобразовать изображение в тензор
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Нормализовать изображение
+    transforms.Resize((64, 64)),
+    transforms.RandomRotation(30),  # Случайный поворот на угол до 30 градусов
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),  # Случайные искажения яркости, контрастности и насыщенности
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),  # Случайные сдвиги по горизонтали и вертикали
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
+
 
 # Создаем Dataset, используя каталоги с изображениями
 train_dataset = datasets.ImageFolder(root='Training', transform=transform)
