@@ -60,6 +60,10 @@ transform = transforms.Compose([
 train_dataset = datasets.ImageFolder(root='Training', transform=transform)
 test_dataset = datasets.ImageFolder(root='Testing', transform=transform)
 
+class_names = train_dataset.classes
+print(class_names)
+
+
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     # Создаем DataLoader для тренировочного и тестового наборов данных
