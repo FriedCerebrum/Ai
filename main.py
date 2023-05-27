@@ -77,7 +77,7 @@ if __name__ == '__main__':
         'val': len(test_dataset)
     }
 
-    num_epochs = 10
+    num_epochs = 20
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
 
