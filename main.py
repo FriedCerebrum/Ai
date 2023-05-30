@@ -1,12 +1,12 @@
 import multiprocessing
 import torch
+import matplotlib.pyplot as plt
 from torchvision import transforms, datasets
 from torch import nn, optim
 from torch.utils.data import DataLoader
 
 # Определение устройства
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 
 # Определение архитектуры нейросети
 class ConvNet(nn.Module):
@@ -37,7 +37,6 @@ class ConvNet(nn.Module):
         out = self.fc2(out)
         return out
 
-
 # Создание объекта нейросети и перемещение его на устройство
 model = ConvNet().to(device)
 
@@ -48,28 +47,23 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 # Определите преобразования, которые нужно выполнить на изображениях
 transform = transforms.Compose([
     transforms.Resize((64, 64)),
-    transforms.RandomRotation(30),  # Случайный поворот на угол до 30 градусов
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),  # Случайные искажения яркости, контрастности и насыщенности
     transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),  # Случайные сдвиги по горизонтали и вертикали
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-
 # Создаем Dataset, используя каталоги с изображениями
 train_dataset = datasets.ImageFolder(root='Training', transform=transform)
 test_dataset = datasets.ImageFolder(root='Testing', transform=transform)
 
 class_names = train_dataset.classes
-print(class_names)
-
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     # Создаем DataLoader для тренировочного и тестового наборов данных
     train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=16)
     test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=16)
-
 
     dataloaders = {
         'train': train_dataloader,
@@ -81,7 +75,16 @@ if __name__ == '__main__':
         'val': len(test_dataset)
     }
 
-    num_epochs = 20
+    num_epochs = 25
+
+    # Сохраняем историю потерь и точности для каждой эпохи
+    history = {
+        'train_loss': [],
+        'train_acc': [],
+        'val_loss': [],
+        'val_acc': []
+    }
+
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
 
@@ -97,6 +100,7 @@ if __name__ == '__main__':
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
+
                 # Обнуление градиентов
                 optimizer.zero_grad()
 
@@ -117,4 +121,23 @@ if __name__ == '__main__':
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 
-torch.save(model.state_dict(), 'model_weights.pth')
+            history[f'{phase}_loss'].append(epoch_loss)
+            history[f'{phase}_acc'].append(epoch_acc)
+
+    torch.save(model.state_dict(), 'model_weights.pth')
+
+    # Построение графиков
+    plt.figure(figsize=(12, 4))
+    plt.subplot(1, 2, 1)
+    plt.plot(range(1, num_epochs+1), history['train_loss'], label='Train Loss')
+    plt.plot(range(1, num_epochs+1), history['val_loss'], label='Validation Loss')
+    plt.legend()
+    plt.title('Loss history')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(range(1, num_epochs+1), history['train_acc'], label='Train Accuracy')
+    plt.plot(range(1, num_epochs+1), history['val_acc'], label='Validation Accuracy')
+    plt.legend()
+    plt.title('Accuracy history')
+
+    plt.show()
