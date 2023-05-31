@@ -38,24 +38,24 @@ class ConvNet(nn.Module):
 # Создание объекта нейросети и перемещение его на устройство
 model = ConvNet().to(device)
 
-# Загрузите веса, которые вы уже обучили
+# Загружаем веса
 model.load_state_dict(torch.load('model_weights.pth'))
-model.eval()  # Установите модель в режим оценки
+model.eval()  # Устанавливаем модель в режим оценки
 
-# Определите преобразования, которые нужно выполнить на изображениях
+# Определяем преобразования изображений
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),  # Изменить размер изображения
+    transforms.Resize((64, 64)),  # Изменяем размер
     transforms.ToTensor(),  # Преобразовать изображение в тензор
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Нормализовать изображение
 ])
 
 def predict(image_path):
-    # Загрузите изображение, которое вы хотите классифицировать
+    # Загружаем изображение для классификации
     image = Image.open(image_path)
     image = transform(image).unsqueeze(0)  # Применить преобразования и добавить измерение пакета
     image = image.to(device)
 
-    # Используйте модель для получения предсказаний
+    # Используем модель для получения предсказаний
     output = model(image)
     _, predicted = torch.max(output, 1)
 

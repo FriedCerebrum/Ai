@@ -44,7 +44,7 @@ model = ConvNet().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 
-# Определите преобразования, которые нужно выполнить на изображениях
+# Определяем преобразования на изображениях
 transform = transforms.Compose([
     transforms.Resize((64, 64)),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),  # Случайные искажения яркости, контрастности и насыщенности
